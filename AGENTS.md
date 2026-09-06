@@ -1,0 +1,5 @@
+- respecter l'architecture existante ;
+- ne pas modifier inutilement d'autres fichiers ;
+- les changements SQL passent par des migrations ;
+- ajouter des tests pour les nouvelles fonctionnalités ;
+- consulter la documentation avant de coder.

@@ -1,0 +1,1 @@
+Décrit la structure logique de la base.
