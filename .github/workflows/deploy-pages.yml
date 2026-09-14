@@ -1,9 +1,8 @@
-name: Deploy Paris Social Planner to GitHub Pages
+name: Deploy mini-apps to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -24,20 +23,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
       - name: Prepare site
         run: |
-          mkdir -p _site
-          cp -R apps/paris-social-planner/. _site/
-
+          rm -rf _site
+          mkdir -p _site/apps
+          cp index.html _site/index.html
+          cp -R apps/. _site/apps/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
