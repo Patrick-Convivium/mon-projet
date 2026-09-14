@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QR Mail — Patrick Convivium</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f5f3ef}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
+    main{width:min(620px,100%);background:#fff;border:1px solid #ddd;border-radius:24px;padding:28px;box-shadow:0 12px 35px rgba(0,0,0,.08);text-align:center}
+    h1{margin:0 0 8px;font-size:30px}
+    .intro{margin:0 auto 22px;color:#666;line-height:1.5}
+    .recipient{display:inline-block;padding:10px 14px;border-radius:999px;background:#f0ede7;font-weight:700;margin-bottom:24px;word-break:break-word}
+    label{display:block;text-align:left;font-weight:700;margin:14px 0 7px}
+    input,textarea{width:100%;padding:12px 14px;border:1px solid #ccc;border-radius:12px;font:inherit;background:#fff}
+    textarea{min-height:110px;resize:vertical}
+    .qr-wrap{min-height:290px;display:grid;place-items:center;margin:24px 0;padding:20px;border:1px dashed #ccc;border-radius:18px;background:#fafafa}
+    #qrcode{display:inline-flex;padding:10px;background:#fff}
+    #qrcode img,#qrcode canvas{display:block;max-width:100%;height:auto}
+    .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+    button,a.button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+    button.primary,a.primary{background:#222;color:#fff}
+    button.secondary{background:#eee;color:#222}
+    .hint{font-size:13px;color:#777;margin:18px 0 0;line-height:1.45}
+    .status{min-height:20px;font-size:13px;color:#666;margin-top:10px}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>QR code → envoyer un mail</h1>
+    <p class="intro">Scannez le QR code avec un téléphone : l'application mail s'ouvre avec le destinataire déjà renseigné.</p>
+    <div class="recipient">patrick.convivium@gmail.com</div>
+
+    <label for="subject">Objet (facultatif)</label>
+    <input id="subject" type="text" placeholder="Objet du message">
+
+    <label for="body">Message (facultatif)</label>
+    <textarea id="body" placeholder="Bonjour Patrick,\n\nMon message..."></textarea>
+
+    <div class="qr-wrap"><div id="qrcode" aria-label="QR code pour envoyer un mail"></div></div>
+
+    <div class="actions">
+      <button class="primary" id="openMail" type="button">Ouvrir l'e-mail</button>
+      <button class="secondary" id="copyLink" type="button">Copier le lien mailto</button>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <p class="hint">Le QR code contient uniquement un lien <code>mailto:</code>. Aucun formulaire ni message n'est envoyé automatiquement.</p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const recipient = 'patrick.convivium@gmail.com';
+    const subject = document.getElementById('subject');
+    const body = document.getElementById('body');
+    const qr = document.getElementById('qrcode');
+    const status = document.getElementById('status');
+
+    function mailtoUrl(){
+      const params = new URLSearchParams();
+      if(subject.value.trim()) params.set('subject', subject.value.trim());
+      if(body.value.trim()) params.set('body', body.value);
+      const query = params.toString();
+      return 'mailto:' + recipient + (query ? '?' + query : '');
+    }
+
+    function renderQr(){
+      qr.innerHTML = '';
+      new QRCode(qr, {text: mailtoUrl(), width: 250, height: 250, correctLevel: QRCode.CorrectLevel.M});
+      status.textContent = 'QR code mis à jour.';
+    }
+
+    document.getElementById('openMail').onclick = () => { window.location.href = mailtoUrl(); };
+    document.getElementById('copyLink').onclick = async () => {
+      try{
+        await navigator.clipboard.writeText(mailtoUrl());
+        status.textContent = 'Lien mailto copié.';
+      }catch(e){
+        status.textContent = 'Copie indisponible sur ce navigateur.';
+      }
+    };
+    subject.addEventListener('input', renderQr);
+    body.addEventListener('input', renderQr);
+    renderQr();
+  </script>
+</body>
+</html>
