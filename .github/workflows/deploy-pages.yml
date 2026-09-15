@@ -23,112 +23,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
-      - name: Build application catalog automatically
+      - name: Build catalog
         shell: python
         run: |
           from pathlib import Path
           from html import unescape
           import re
-
-          root = Path('apps')
-          site = Path('_site')
-          site.mkdir(parents=True, exist_ok=True)
-          (site / 'apps').mkdir(parents=True, exist_ok=True)
-
-          def title_for(path):
-              text = path.read_text(encoding='utf-8', errors='ignore')
-              m = re.search(r'<title[^>]*>(.*?)</title>', text, re.I | re.S)
-              if m:
-                  title = re.sub(r'\\s+', ' ', unescape(re.sub(r'<[^>]+>', '', m.group(1)))).strip()
-                  if title:
-                      return title
-              return path.parent.name.replace('-', ' ').replace('_', ' ').title()
-
-          apps = []
-          for directory in sorted(p for p in root.iterdir() if p.is_dir()):
-              entry = directory / 'index-v4.html' if (directory / 'index-v4.html').is_file() else directory / 'index.html'
-              if entry.is_file():
-                  apps.append((title_for(entry), f"apps/{directory.name}/{entry.name}"))
-
-          if not apps:
-              raise SystemExit('Aucune mini-app avec un point d\'entrée index.html/index-v4.html n\'a été trouvée dans apps/.')
-
-          cards = '\n'.join(
-              f'<a class="card" href="{href}"><span class="num">{i:02d}</span><strong>{title}</strong><span class="open">Ouvrir le module <b>↗</b></span></a>'
-              for i, (title, href) in enumerate(apps, 1)
-          )
-
-          html = f'''<!doctype html>
-          <html lang="fr">
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width,initial-scale=1">
-            <meta name="theme-color" content="#030705">
-            <title>Centre applicatif</title>
-            <style>
-              :root{{--bg:#030705;--panel:rgba(7,17,12,.78);--line:#173b27;--green:#62ff9b;--soft:#9cc9ae;--muted:#638070}}
-              *{{box-sizing:border-box}}
-              html{{scroll-behavior:smooth}}
-              body{{margin:0;min-height:100vh;background:#030705;color:#dff5e6;font-family:"IBM Plex Mono","Cascadia Code","SFMono-Regular",Consolas,monospace;overflow-x:hidden}}
-              canvas{{position:fixed;inset:0;width:100%;height:100%;z-index:-2}}
-              body:before{{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 0,rgba(31,126,69,.16),transparent 42%),linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.52))}}
-              main{{max-width:1180px;margin:auto;padding:58px 20px 54px}}
-              header{{padding:30px 0 28px;border-bottom:1px solid var(--line);margin-bottom:25px}}
-              .status{{display:flex;gap:9px;align-items:center;color:var(--soft);font-size:11px;letter-spacing:.12em;text-transform:uppercase}}
-              .dot{{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 13px var(--green);animation:pulse 2.4s infinite}}
-              @keyframes pulse{{50%{{opacity:.45;box-shadow:0 0 5px var(--green)}}}}
-              h1{{font-size:clamp(34px,7vw,72px);letter-spacing:-.07em;margin:14px 0 8px;color:#e9fff0;text-shadow:0 0 24px rgba(98,255,155,.16)}}
-              .sub{{margin:0;color:#8eb49b;max-width:760px;line-height:1.7;font-size:14px}}
-              .grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}}
-              .card{{position:relative;display:flex;flex-direction:column;gap:12px;min-height:138px;padding:19px;text-decoration:none;color:inherit;background:linear-gradient(145deg,rgba(9,25,16,.88),rgba(4,12,8,.88));border:1px solid #164127;border-radius:15px;overflow:hidden;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}}
-              .card:before{{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 20%,rgba(98,255,155,.08),transparent 70%);transform:translateX(-100%);transition:transform .5s ease}}
-              .card:hover{{transform:translateY(-4px);border-color:#3d9c62;box-shadow:0 14px 35px rgba(0,0,0,.35),0 0 20px rgba(47,174,91,.08)}}
-              .card:hover:before{{transform:translateX(100%)}}
-              .num{{color:#46765a;font-size:11px;letter-spacing:.12em}}
-              .card strong{{font-size:17px;color:#e2f8e9;line-height:1.35}}
-              .open{{margin-top:auto;color:#72a487;font-size:12px}}
-              .open b{{color:var(--green);font-size:16px}}
-              footer{{display:flex;justify-content:space-between;gap:12px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line);color:#50705d;font-size:11px}}
-              code{{color:#70ba8a}}
-              @media(max-width:560px){{main{{padding:32px 14px}}.grid{{grid-template-columns:1fr}}.card{{min-height:120px}}footer{{display:block;line-height:1.8}}}}
-              @media(prefers-reduced-motion:reduce){{.dot{{animation:none}}.card,.card:before{{transition:none}}}}
-            </style>
-          </head>
-          <body>
-            <canvas id="matrix" aria-hidden="true"></canvas>
-            <main>
-              <header>
-                <div class="status"><i class="dot"></i> système opérationnel · accès local</div>
-                <h1>CENTRE APPLICATIF</h1>
-                <p class="sub">Une interface unique pour accéder aux mini-applications. <span id="clock"></span></p>
-              </header>
-              <section class="grid" aria-label="Applications">{cards}</section>
-              <footer><span>{len(apps)} module(s) détecté(s)</span><span>apps/ · publication automatique</span></footer>
-            </main>
-            <script>
-              const c=document.getElementById('matrix'),x=c.getContext('2d');let w,h,cols,drops;const chars='01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<>[]{}$#*+−';
-              function resize(){{w=c.width=innerWidth*devicePixelRatio;h=c.height=innerHeight*devicePixelRatio;x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);w=innerWidth;h=innerHeight;cols=Math.ceil(w/18);drops=Array.from({{length:cols}},()=>Math.random()*-40)}}
-              function rain(){{x.fillStyle='rgba(3,7,5,.085)';x.fillRect(0,0,w,h);x.font='12px monospace';for(let i=0;i<cols;i++){{const y=drops[i]*18;if(y>0&&y<h){{x.fillStyle='rgba(82,255,145,.38)';x.fillText(chars[Math.floor(Math.random()*chars.length)],i*18,y)}}drops[i]+=Math.random()*.75+.2;if(y>h+100)drops[i]=Math.random()*-30}}requestAnimationFrame(rain)}}
-              addEventListener('resize',resize);resize();rain();
-              const clock=document.getElementById('clock');function tick(){{clock.textContent='· '+new Date().toLocaleTimeString('fr-FR',{{hour:'2-digit',minute:'2-digit',second:'2-digit'}}))}}tick();setInterval(tick,1000);
-            </script>
-          </body>
-          </html>'''
-          (site / 'index.html').write_text(html, encoding='utf-8')
-          print(f'Catalogue généré : {len(apps)} applications')
-
-      - name: Copy all mini-apps
+          root=Path('apps'); site=Path('_site'); (site/'apps').mkdir(parents=True,exist_ok=True)
+          apps=[]
+          for d in sorted(p for p in root.iterdir() if p.is_dir()):
+              e=d/'index-v4.html' if (d/'index-v4.html').is_file() else d/'index.html'
+              if e.is_file():
+                  t=e.read_text(encoding='utf-8',errors='ignore'); m=re.search(r'<title[^>]*>(.*?)</title>',t,re.I|re.S)
+                  title=re.sub(r'\s+',' ',unescape(re.sub(r'<[^>]+>','',m.group(1)))).strip() if m else d.name.replace('-',' ').title()
+                  apps.append((title,f'apps/{d.name}/{e.name}'))
+          cards=''.join(f'<a href="{h}"><i>{i:02d}</i><strong>{x}</strong><small>ouvrir →</small></a>' for i,(x,h) in enumerate(apps,1))
+          page=f'''<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Centre applicatif</title><style>:root{{--g:#45ff91;--bg:#020604;--p:#07120c;--l:#17472b;--t:#dcf7e6;--m:#709982}}*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--t);font:15px "SFMono-Regular",Consolas,monospace}}#m{{position:fixed;inset:0;width:100%;height:100%;opacity:.14;z-index:-1}}main{{max-width:1100px;margin:auto;padding:42px 18px}}header{{padding:24px 0;border-bottom:1px solid var(--l);margin-bottom:20px}}.status{{color:var(--g);font-size:11px;letter-spacing:.12em}}h1{{font-size:clamp(34px,7vw,64px);margin:12px 0 6px}}p,small{{color:var(--m)}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}}a{{display:flex;flex-direction:column;min-height:125px;padding:18px;border:1px solid var(--l);border-radius:14px;background:rgba(5,18,10,.9);color:inherit;text-decoration:none;transition:.2s}}a:hover{{transform:translateY(-3px);border-color:var(--g);box-shadow:0 0 20px #45ff9114}}i{{font-style:normal;color:var(--g);font-size:11px;margin-bottom:18px}}strong{{font-size:16px}}small{{margin-top:auto;padding-top:14px}}footer{{margin-top:20px;color:#426a50;font-size:10px}}@media(prefers-reduced-motion:reduce){{#m{{display:none}}a{{transition:none}}}}</style></head><body><canvas id="m"></canvas><main><header><div class="status">● SYSTÈME // CENTRE APPLICATIF</div><h1>MON PROJET</h1><p>Accès aux mini-applications, carnets et outils interactifs.</p></header><section class="grid">{cards}</section><footer>{len(apps)} modules · apps/ · publication automatique</footer></main><script>const c=document.getElementById('m'),x=c.getContext('2d');let w,h,n,d;function s(){{w=innerWidth;h=innerHeight;c.width=w;c.height=h;n=Math.ceil(w/18);d=Array.from({{length:n}},()=>Math.random()*-40)}}function r(){{x.fillStyle='rgba(2,6,4,.09)';x.fillRect(0,0,w,h);x.font='12px monospace';for(let i=0;i<n;i++){{x.fillStyle='rgba(69,255,145,.45)';x.fillText(Math.random()>.5?'1':'0',i*18,d[i]*18);d[i]+=.7;if(d[i]*18>h)d[i]=Math.random()*-30}}requestAnimationFrame(r)}}s();addEventListener('resize',s);r();</script></body></html>'''
+          (site/'index.html').write_text(page,encoding='utf-8')
+      - name: Copy apps
         run: cp -R apps/. _site/apps/
-
-      - name: Upload artifact
+      - name: Upload
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
-
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
