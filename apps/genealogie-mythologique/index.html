@@ -1,1 +1,104 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Arbres des dieux</title><style>body{margin:0;background:#211a10;color:#e9dfc3;font:16px Georgia;padding:24px}.wrap{max-width:1000px;margin:auto}button{padding:9px 14px;margin:4px;background:#e0c789;border:0;border-radius:20px;cursor:pointer}.tree{background:#e9dfc3;color:#2b2013;padding:20px;margin-top:15px;min-height:400px}.node{display:inline-block;border:1px solid #b8892b;padding:12px;margin:8px;border-radius:8px;background:#f4ebd0}</style></head><body><div class=wrap><h1>Arbres des dieux</h1><p>Explore des généalogies mythologiques par tradition.</p><div id=tabs></div><div id=tree class=tree></div></div><script>const data={Grecque:[['Chaos','Gaïa','Ouranos','Cronos','Zeus'],Egyptienne:['Nout','Geb','Osiris','Isis','Horus'],Nordique:['Borr','Odin','Thor','Baldr','Loki'],Romaine:['Saturne','Jupiter','Neptune','Pluton','Vénus']};Object.keys(data).forEach(k=>{let b=document.createElement('button');b.textContent=k;b.onclick=()=>show(k);tabs.appendChild(b)});function show(k){tree.innerHTML='<h2>'+k+'</h2>'+data[k].map((x,i)=>`<div class=node><b>${i+1}</b><br>${x}</div>`).join('')}show('Grecque')</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arbres des dieux — généalogie grecque & romaine</title>
+<style>
+:root{--bg:#f4efe5;--ink:#28231c;--muted:#746b5e;--card:#fffdf8;--line:#c9bda9;--gold:#a77724;--blue:#355c7d;--red:#7a3f3f}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,serif}.wrap{max-width:1250px;margin:auto;padding:24px}header{padding:24px 0 10px}h1{font-size:clamp(30px,5vw,52px);margin:0 0 8px}.lead{color:var(--muted);max-width:850px;line-height:1.6}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button,.filter{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 16px;cursor:pointer;font:inherit}.tabs button.active{background:#28231c;color:#fff}.legend{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 22px;font:13px system-ui;color:var(--muted)}.legend span{padding:5px 9px;border-radius:99px;background:#e9e1d3}.tree{overflow-x:auto;padding-bottom:20px}.generation{min-width:1000px;margin-bottom:28px}.gen-title{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:12px}.gen-title b{background:#28231c;color:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font:700 14px system-ui}.nodes{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap}.node{width:230px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 3px 10px #00000009}.node h3{margin:0 0 3px;font-size:19px}.roman{color:var(--gold);font:700 12px system-ui}.role{font:700 11px system-ui;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:8px 0}.story{font-size:14px;line-height:1.5;color:#51493f}.parents{font:12px system-ui;color:var(--blue);margin-top:10px}.children{font:12px system-ui;color:var(--red);margin-top:5px}.branch{border-left:3px solid var(--gold);padding-left:14px;margin:12px 0 0}.timeline{font:14px system-ui;color:var(--muted);background:#eee7da;padding:12px 14px;border-radius:12px;line-height:1.55}.note{background:#fff8df;border:1px solid #e5cf91;padding:14px;border-radius:14px;line-height:1.55;margin:18px 0}.search{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fffdf8;font:inherit;margin:10px 0 20px}.hidden{display:none}.footer{font:12px system-ui;color:var(--muted);margin-top:28px}
+</style></head>
+<body><div class="wrap">
+<header><h1>Arbres des dieux</h1><p class="lead">Une généalogie narrative des principales divinités grecques et romaines, organisée par générations mythologiques : des puissances primordiales aux Titans, aux Olympiens, puis aux héros et demi-dieux.</p></header>
+<div class="tabs" id="tabs"></div>
+<input class="search" id="search" placeholder="Rechercher un dieu, une déesse, un héros ou une histoire…">
+<div class="legend"><span>⚡ Dieux primordiaux</span><span>⛰ Titans</span><span>🏛 Olympiens</span><span>🧬 Héros / demi-dieux</span><span>🔱 Divinité ou équivalent romain</span></div>
+<div id="app"></div>
+<div class="footer">Les mythes possèdent plusieurs traditions et généalogies concurrentes. L'arbre principal suit surtout la tradition généalogique d'Hésiode pour la Grèce, avec les correspondances romaines lorsqu'elles sont pertinentes.</div>
+</div>
+<script>
+const G={
+ title:'Grèce antique',
+ generations:[
+ {n:'I',title:'Les puissances primordiales — naissance du cosmos',items:[
+ ['Chaos','—','Principe primordial','Dans la Théogonie, Chaos est la première puissance. De lui viennent notamment Gaïa, le Tartare, Érèbe et Nyx selon les traditions.',''],
+ ['Gaïa','Gaea / Tellus','Terre','La Terre primordiale. Elle engendre Ouranos et Pontos, puis avec Ouranos les Titans, les Cyclopes et les Hécatonchires.','Ouranos · Pontos · Titans'],
+ ['Ouranos','Uranus / Caelus','Ciel','Fils de Gaïa dans la tradition d’Hésiode et son compagnon. Il devient le premier souverain céleste avant d’être renversé par Cronos.','Titans · Cyclopes · Hécatonchires'],
+ ['Nyx','Nox','Nuit','Puissance primordiale de la Nuit, à l’origine de nombreuses forces abstraites comme le Sommeil, les Rêves et les Destins dans différentes traditions.','Hypnos · Thanatos · Éris…'],
+ ['Éros','Amor','Amour / attraction','Force primordiale d’union dans les récits cosmogoniques ; il faut le distinguer du jeune Éros, compagnon d’Aphrodite dans les traditions ultérieures.','']
+ ]},
+ {n:'II',title:'Les Titans — première dynastie divine',items:[
+ ['Océan','Oceanus','Eaux du monde','Titan ancien, fils de Gaïa et Ouranos. Avec Téthys, il engendre les fleuves et les Océanides.','Océanides · fleuves'],
+ ['Théia','Theia','Lumière céleste','Titanide, compagne d’Hypérion et mère des grands astres personnifiés.','Hélios · Séléné · Éos'],
+ ['Hypérion','Hyperion','Lumière céleste','Titan associé aux hauteurs célestes. Avec Théia, il engendre le Soleil, la Lune et l’Aurore.','Hélios · Séléné · Éos'],
+ ['Japet','Iapetus','Lignée des Titans','Titan père d’une lignée qui relie les dieux au monde humain. Selon les traditions, ses fils sont Prométhée, Épiméthée, Atlas et Ménétios.','Prométhée · Atlas · Épiméthée'],
+ ['Rhéa','Rhea','Maternité','Titanide et compagne de Cronos. Elle protège Zeus de Cronos en lui faisant avaler une pierre à la place du nouveau-né.','Hestia · Déméter · Héra · Hadès · Poséidon · Zeus'],
+ ['Cronos','Cronus','Temps / souverain des Titans','Il détrône Ouranos. Craignant d’être détrôné à son tour, il avale ses enfants ; Zeus lui échappe et finit par conduire les Olympiens à la victoire.','Hestia · Déméter · Héra · Hadès · Poséidon · Zeus'],
+ ['Thémis','Themis','Loi / ordre','Titanide associée à l’ordre divin, à la justice et aux règles sacrées. Elle devient une alliée de Zeus.','Heures · Moires selon les traditions'],
+ ['Mnémosyne','Mnemosyne','Mémoire','Titanide de la mémoire. Zeus s’unit à elle pendant neuf nuits ; de cette union naissent les neuf Muses.','Les neuf Muses']
+ ]},
+ {n:'III',title:'La génération olympienne',items:[
+ ['Hestia','Vesta','Foyer','Fille aînée de Cronos et Rhéa. Elle représente le foyer et sa flamme sacrée.',''],
+ ['Déméter','Cérès','Agriculture','Déesse des récoltes. La disparition de sa fille Perséphone explique dans le mythe les cycles de la végétation et des saisons.','Perséphone'],
+ ['Héra','Junon','Mariage / royauté','Sœur et épouse de Zeus, reine des dieux. Ses récits mettent souvent en scène son mariage conflictuel avec Zeus et ses relations avec les héros issus de ses infidélités.','Arès · Hébé · Ilithyie'],
+ ['Hadès','Pluton','Monde des morts','Frère de Zeus et Poséidon. Il reçoit le royaume souterrain lors du partage du cosmos. Son histoire est liée à Perséphone.','Perséphone'],
+ ['Poséidon','Neptune','Mer / séismes','Frère de Zeus. Il reçoit la mer après la victoire sur les Titans et intervient dans de nombreux récits héroïques.','Triton · Thésée selon traditions…'],
+ ['Zeus','Jupiter','Ciel / souveraineté','Dernier enfant de Cronos et Rhéa. Il renverse les Titans et devient souverain des dieux. Ses nombreuses unions donnent naissance à des dieux et héros.','Athéna · Apollon · Artémis · Arès · Hermès · Dionysos…'],
+ ['Aphrodite','Vénus','Amour / beauté','Dans la Théogonie d’Hésiode, elle naît de l’écume issue d’Ouranos ; d’autres traditions en font la fille de Zeus et Dioné.','Énée · Éros…'],
+ ['Apollon','Apollo','Soleil / arts / prophétie','Fils de Zeus et Léto. Il est associé à la musique, la poésie, la médecine, l’archerie et l’oracle de Delphes.','Asclépios · plusieurs héros'],
+ ['Artémis','Diane','Chasse / nature','Sœur jumelle d’Apollon et fille de Zeus et Léto. Déesse de la chasse et protectrice de nombreux espaces sauvages.',''],
+ ['Athéna','Minerve','Sagesse / stratégie','Fille de Zeus et Métis dans la tradition classique. Zeus avale Métis enceinte ; Athéna naît ensuite armée, de la tête de Zeus.',''],
+ ['Hermès','Mercure','Voyage / messages','Fils de Zeus et de Maïa. Messager des dieux, guide des voyageurs et des morts, il est aussi le dieu de l’ingéniosité et du commerce.',''],
+ ['Arès','Mars','Guerre','Fils de Zeus et Héra dans la tradition la plus courante. Il incarne l’aspect violent et tumultueux de la guerre.','Harmonie avec Aphrodite selon tradition'],
+ ['Héphaïstos','Vulcain','Forge / feu','Dieu forgeron. Sa naissance varie selon les auteurs : fils d’Héra seule ou de Zeus et Héra. Il fabrique les armes et objets merveilleux des dieux.','Éros / Pandore dans certaines traditions']
+ ]},
+ {n:'IV',title:'Descendance divine et grands héros',items:[
+ ['Perséphone','Proserpine','Reine des Enfers / végétation','Fille de Zeus et Déméter dans la tradition courante. Hadès l’emporte aux Enfers ; son retour partiel auprès de Déméter structure le mythe des saisons.','Hadès'],
+ ['Dionysos','Bacchus','Vigne / extase / théâtre','Fils de Zeus et de la mortelle Sémélé. Zeus le sauve de la mort de sa mère et l’achève dans sa propre cuisse selon le récit célèbre.','Zeus · Sémélé'],
+ ['Héraclès','Hercule','Héros','Fils de Zeus et de la mortelle Alcmène. Après avoir subi la colère d’Héra, il accomplit les Douze Travaux et devient une figure majeure de l’héroïsme grec.','Zeus · Alcmène'],
+ ['Persée','Perseus','Héros','Fils de Zeus et de Danaé. Il tue Méduse, sauve Andromède et devient ancêtre de plusieurs lignées héroïques.','Zeus · Danaé'],
+ ['Thésée','Theseus','Héros athénien','Héros lié à Athènes. Il tue le Minotaure grâce au fil d’Ariane et devient ensuite roi d’Athènes selon la tradition.','Égée / Poséidon selon traditions · Éthra'],
+ ['Achille','Achilles','Héros de la guerre de Troie','Fils de Pélée, mortel, et de Thétis, Néréide. Sa colère et sa mort occupent une place centrale dans les récits de la guerre de Troie.','Pélée · Thétis'],
+ ['Énée','Aeneas','Héros troyen','Fils d’Aphrodite et du mortel Anchise. Survivant de Troie, il devient dans la tradition romaine l’ancêtre mythique de la lignée menant à Rome.','Aphrodite · Anchise']
+ ]}
+ ]};
+const R={
+ title:'Rome antique',
+ generations:[
+ {n:'I',title:'Origines divines — les puissances anciennes',items:[
+ ['Chaos','Chaos','Origine cosmique','Les Romains reprennent et adaptent plusieurs figures cosmogoniques grecques.',''],
+ ['Tellus','Gaïa','Terre','Personnification romaine de la Terre, rapprochée de Gaïa. Elle représente la fécondité et la terre nourricière.','Saturne'],
+ ['Caelus','Ouranos','Ciel','Personnification romaine du Ciel, équivalent d’Ouranos. Dans la tradition mythographique, il est associé à Tellus et à la génération des Titans.','Saturne / autres divinités anciennes'],
+ ['Saturne','Cronos','Agriculture / temps','Ancienne divinité romaine assimilée à Cronos. Après son règne, Jupiter prend la souveraineté. Le mythe de l’âge d’or est lié à son règne.','Jupiter · Neptune · Pluton…']
+ ]},
+ {n:'II',title:'La génération de Jupiter',items:[
+ ['Jupiter','Zeus','Ciel / souveraineté','Fils de Saturne et Ops dans la tradition romaine. Il détrône Saturne et devient le maître du panthéon romain.','Minerve · Mars · Mercure · Apollon…'],
+ ['Junon','Héra','Mariage / État','Épouse de Jupiter et reine des dieux. Elle protège le mariage et possède un rôle majeur dans la religion civique romaine.','Mars · Juventas · Lucine selon traditions'],
+ ['Neptune','Poséidon','Mer','Frère de Jupiter. Il gouverne les eaux et les chevaux dans la tradition romaine.','Triton'],
+ ['Pluton','Hadès','Monde souterrain','Divinité romaine du monde des morts et des richesses souterraines. Il est associé à Proserpine.','Proserpine'],
+ ['Cérès','Déméter','Agriculture','Déesse romaine des céréales et de l’agriculture. Son culte est lié à la prospérité des récoltes.','Proserpine'],
+ ['Minerve','Athéna','Sagesse / artisanat','Déesse romaine de la sagesse, des arts et de la stratégie, membre de la triade capitoline avec Jupiter et Junon.','Jupiter'],
+ ['Mars','Arès','Guerre','Contrairement à l’image grecque d’Arès, Mars occupe une place très importante dans l’identité religieuse et militaire romaine.','Romulus · Rémus selon tradition'],
+ ['Vénus','Aphrodite','Amour / fécondité','Déesse romaine de l’amour et de la beauté. Par son fils Énée, elle devient une ancêtre mythique de la lignée romaine.','Énée'],
+ ['Mercure','Hermès','Commerce / messages','Dieu des échanges, des voyageurs et des messagers. Fils de Jupiter et de Maïa dans la tradition romaine.','Jupiter · Maïa'],
+ ['Apollon','Apollon','Prophétie / arts / médecine','Dieu grec adopté presque directement par Rome. Son culte est particulièrement important à partir de l’époque impériale.','Jupiter · Léto'],
+ ['Diane','Artémis','Chasse / nature','Sœur d’Apollon et déesse de la chasse. Le culte romain développe aussi des aspects liés à la lune et aux femmes.','Jupiter · Latone']
+ ]},
+ {n:'III',title:'Lignée troyenne — d’Énée à Rome',items:[
+ ['Énée','Aeneas','Ancêtre héroïque','Fils de Vénus et d’Anchise. Après la chute de Troie, il voyage vers l’Italie ; son histoire devient le grand récit fondateur de l’Énéide de Virgile.','Vénus · Anchise'],
+ ['Ascagne / Iule','Ascanius / Iulus','Prince troyen','Fils d’Énée. Il accompagne son père en Italie et fonde selon la tradition la lignée des Iulii, à laquelle les Romains rattacheront plus tard Jules César et Auguste.','Énée'],
+ ['Rhéa Silvia','Rhea Silvia','Vestale / ancêtre royale','Fille de Numitor et mère des jumeaux fondateurs dans le récit traditionnel. Mars est leur père divin.','Mars · Numitor'],
+ ['Romulus','Romulus','Fondateur mythique de Rome','Fils de Mars et de Rhéa Silvia. Avec son frère Rémus, il est abandonné puis élevé par une louve dans le récit légendaire ; Romulus fonde Rome après le conflit entre les deux frères.','Mars · Rhéa Silvia'],
+ ['Rémus','Remus','Héros fondateur','Frère jumeau de Romulus. Le récit traditionnel se termine par sa mort lors du conflit qui accompagne la fondation de Rome.','Mars · Rhéa Silvia']
+ ]},
+ {n:'IV',title:'Héros, dieux et récits romains tardifs',items:[
+ ['Hercule','Héraclès','Héros divinisé','Rome reprend Héraclès sous le nom d’Hercule et développe ses propres récits, cultes et sanctuaires.','Jupiter / Alcmène'],
+ ['Bacchus','Dionysos','Vigne / théâtre','Nom romain très répandu pour Dionysos, avec une tradition italique et romaine propre autour du vin et de l’extase rituelle.','Jupiter · Sémélé'],
+ ['Proserpine','Perséphone','Reine des Enfers','Fille de Cérès et compagne de Pluton. Son histoire explique symboliquement l’alternance de la croissance et du dépérissement de la nature.','Cérès · Pluton']
+ ]}
+ ]};
+let current='G';
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderTabs(){tabs.innerHTML=['G','R'].map(k=>`<button class="${current===k?'active':''}" onclick="setTab('${k}')">${k==='G'?'🇬🇷 Grèce':'🇮🇹 Rome'}</button>`).join('')}
+function render(){const data=current==='G'?G:R;const q=search.value.trim().toLowerCase();let html=`<div class="note"><b>Comment lire l’arbre :</b> les générations sont un ordre mythologique, pas une chronologie historique. Une même divinité peut avoir plusieurs filiations selon les auteurs. Les équivalences grecques/romaines sont des rapprochements religieux, pas toujours des copies exactes.</div><div class="tree">`;
+ data.generations.forEach(gen=>{const items=gen.items.filter(x=>!q||x.join(' ').toLowerCase().includes(q));if(!items.length)return;html+=`<section class="generation"><div class="gen-title"><b>${gen.n}</b><div><strong>${esc(gen.title)}</strong><div style="color:#746b5e;font:12px system-ui">Génération mythologique</div></div></div><div class="nodes">`;items.forEach(x=>{html+=`<article class="node"><h3>${esc(x[0])}</h3><div class="roman">${esc(x[1])}</div><div class="role">${esc(x[2])}</div><div class="story">${esc(x[3])}</div>${x[4]?`<div class="children">↳ Descendance : ${esc(x[4])}</div>`:''}</article>`});html+=`</div></section>`});html+='</div>';app.innerHTML=html}
+function setTab(k){current=k;renderTabs();render()}search.oninput=render;renderTabs();render();
+</script></body></html>
