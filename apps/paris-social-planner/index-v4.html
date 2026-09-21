@@ -1,53 +1,152 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Paris Social Planner</title><style>body{margin:0;background:#f5f3ef;color:#202020;font-family:system-ui,-apple-system,sans-serif}header,main{max-width:1180px;margin:auto;padding:24px}h1{margin:0}header p{color:#707070}.toolbar,.hero,.card,.fav{background:white;border:1px solid #ddd9d1;border-radius:18px;padding:16px;margin-bottom:14px}.toolbar{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:10px}label{display:block;font-size:11px;font-weight:800;color:#777;margin-bottom:5px}select,input,button{font:inherit;border:1px solid #ddd9d1;border-radius:10px;padding:10px}button{background:#171717;color:white;font-weight:700;cursor:pointer}.secondary{background:#eeeae3;color:#222}.hero{display:flex;justify-content:space-between;gap:16px}.hero p,.summary,.notice{color:#666}.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{position:relative}.star{position:absolute;right:12px;top:12px;background:transparent;color:#999;border:0;font-size:24px;padding:0}.star.active{color:#b68100}.meta{font-size:11px;color:#777;font-weight:800}.card h2{margin:7px 30px 5px 0;font-size:19px}.actions{display:flex;gap:8px}.actions button{flex:1}details{margin-top:12px;border-top:1px solid #ddd9d1;padding-top:10px}summary{cursor:pointer;font-weight:750}.timeline{display:grid;grid-template-columns:70px 1fr;gap:8px 10px;margin-top:10px}.time{font-size:12px;font-weight:800;color:#777;padding-top:10px}.activity{border:1px solid #ddd9d1;border-radius:12px;padding:10px}.activity small{display:block;color:#666;margin-top:3px}.tag{display:inline-block;background:#eeeae3;border-radius:99px;padding:3px 7px;font-size:10px;margin-top:5px}.favgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.empty{text-align:center;color:#777;padding:18px}@media(max-width:850px){.toolbar,.scenarios,.favgrid{grid-template-columns:1fr}.hero{display:block}}</style><style>:root{--bg:#070b0a;--panel:#101715;--line:#2a3933;--text:#eef6f1;--muted:#9aada4;--accent:#bde8ce;--gold:#dfc98f}body{background:radial-gradient(circle at 50% 0,#172821,#070b0a 48%,#040605);color:var(--text)}header,main{max-width:1240px}.toolbar,.hero,.card,.fav{background:rgba(16,23,21,.96);border-color:var(--line);box-shadow:0 12px 35px rgba(0,0,0,.22)}header p,.hero p,.summary,.empty{color:var(--muted)}label,.meta{color:var(--gold)}select,input,button{background:#0b110f;color:var(--text);border-color:#34443d}.secondary{background:#1a2521;color:var(--text)}.activity{background:#0c1311;border-color:#2d3c36}.activity small{color:#aebdb6}.tag{background:#19241f;color:#b9d8c6}.notice{background:rgba(223,201,143,.06);border-left-color:var(--gold);color:#b8c8c0}.place{color:var(--accent);text-decoration:none;border-bottom:1px dotted #709482}.place:hover{text-decoration:underline}.route{margin-top:12px;padding:11px;border:1px solid #33463d;border-radius:12px;background:#0a100e}.route a{color:var(--accent);font-weight:750}.route-note{color:var(--muted);font-size:11px}.check{color:#a9d9b9}.warning{color:#efaaa0}@media(max-width:900px){.scenarios{grid-template-columns:1fr}}</style></head><body class="dark"><header><h1>Paris Social Planner</h1><p>V4 · programme ouvrable directement, dates et favoris</p></header><main><section class="toolbar"><div><label>PÉRIODE</label><select id="period"><option value="weekend">Ce week-end</option><option value="day">Un jour précis</option><option value="week">Une semaine</option><option value="custom">Période personnalisée</option></select></div><div><label>DATE / DÉBUT</label><input id="start" type="date"></div><div><label>FIN</label><input id="end" type="date"></div><button id="refresh">Générer</button></section><section class="hero"><div><h2 id="title">3 journées proposées</h2><p id="subtitle">Chaque carte contient son programme directement ouvrable.</p></div><button class="secondary" id="reroll">Nouveau tirage</button></section><div class="notice" style="margin-top:12px;padding:10px 12px;border-left:3px solid var(--gold);border-radius:8px">Horaires issus des informations publiques disponibles ; des fermetures exceptionnelles peuvent modifier l’accès le jour J.</div><section id="scenarios" class="scenarios"></section><section class="fav"><h3>⭐ Mes favoris <span id="favcount" class="meta"></span></h3><div id="favorites" class="favgrid"></div></section></main><script>
 const P={
-cafe:{name:'Le Café des Musées',q:'Le Café des Musées, 49 Rue de Turenne, Paris',lat:48.8597,lon:2.3621,open:d=>true,range:['10:00','22:30']},
-vosges:{name:'Place des Vosges',q:'Place des Vosges, Paris',lat:48.8554,lon:2.3653,open:d=>true,range:['00:00','23:59']},
-seine:{name:'Berges de Seine, Quai d’Orsay',q:"Berges de Seine, Quai d'Orsay, Paris",lat:48.8592,lon:2.3214,open:d=>true,range:['00:00','23:59']},
-branly:{name:'Jardin du Musée du Quai Branly',q:'Jardin du Musée du Quai Branly, Paris',lat:48.8600,lon:2.2978,open:d=>d.getDay()!==1,range:['10:00','19:00']},
-tokyo:{name:'Café du Palais de Tokyo',q:'Café du Palais de Tokyo, Paris',lat:48.8647,lon:2.2971,open:d=>true,range:['12:00','22:00']},
-montsouris:{name:'Parc Montsouris',q:'Parc Montsouris, Paris',lat:48.8226,lon:2.3388,open:d=>true,range:['07:00','20:30']},
-brassens:{name:'Parc Georges-Brassens',q:'Parc Georges-Brassens, Paris',lat:48.8330,lon:2.3008,open:d=>true,range:['08:00','20:30']},
-wanted:{name:'Wanted Café Paris',q:'Wanted Café Paris, 70 Rue du Faubourg Saint-Martin, Paris',lat:48.8717,lon:2.3572,open:d=>true,range:['08:00','01:00']},
-pavillon:{name:'Le Pavillon des Canaux',q:'Le Pavillon des Canaux, 39 Quai de la Loire, Paris',lat:48.8870,lon:2.3744,open:d=>d.getDay()!==1,range:['11:00','00:00']},
-buttes:{name:'Parc des Buttes-Chaumont',q:'Parc des Buttes-Chaumont, Paris',lat:48.8809,lon:2.3828,open:d=>true,range:['07:00','21:00']},
-chapeau:{name:'Parc de la Butte du Chapeau Rouge',q:'Parc de la Butte du Chapeau Rouge, Paris',lat:48.8777,lon:2.4052,open:d=>true,range:['07:00','20:30']},
-floral:{name:'Parc Floral de Paris',q:'Parc Floral de Paris',lat:48.8375,lon:2.4399,open:d=>true,range:['09:30','20:00']},
-auteuil:{name:'Jardin des Serres d’Auteuil',q:'Jardin des Serres d’Auteuil, Paris',lat:48.8470,lon:2.2528,open:d=>d.getDay()!==1,range:['08:00','20:00']},
-boulogne:{name:'Bois de Boulogne',q:'Bois de Boulogne, Paris',lat:48.8620,lon:2.2520,open:d=>true,range:['00:00','23:59']},
-canal:{name:'Canal Saint-Martin',q:'Canal Saint-Martin, Paris',lat:48.8710,lon:2.3650,open:d=>true,range:['00:00','23:59']},
-belleville:{name:'Parc de Belleville',q:'Parc de Belleville, Paris',lat:48.8720,lon:2.3870,open:d=>true,range:['07:00','20:30']},
-villette:{name:'Bassin de la Villette',q:'Bassin de la Villette, Paris',lat:48.8890,lon:2.3740,open:d=>true,range:['00:00','23:59']},
-vincennes:{name:'Bois de Vincennes',q:'Bois de Vincennes, Paris',lat:48.8330,lon:2.4330,open:d=>true,range:['00:00','23:59']},
-trocadero:{name:'Place du Trocadéro',q:'Place du Trocadéro, Paris',lat:48.8619,lon:2.2870,open:d=>true,range:['00:00','23:59']}
+cafe:{name:'Le Café des Musées',q:'Le Café des Musées, 49 Rue de Turenne, Paris',lat:48.8597,lon:2.3621,type:['meal','social'],range:['10:00','22:30'],open:d=>true},
+vosges:{name:'Place des Vosges',q:'Place des Vosges, Paris',lat:48.8554,lon:2.3653,type:['walk','urban'],range:['00:00','23:59'],open:d=>true},
+seine:{name:'Berges de Seine, Quai d’Orsay',q:"Berges de Seine, Quai d'Orsay, Paris",lat:48.8592,lon:2.3214,type:['walk','water'],range:['00:00','23:59'],open:d=>true},
+branly:{name:'Jardin du Musée du Quai Branly',q:'Jardin du Musée du Quai Branly, Paris',lat:48.8600,lon:2.2978,type:['garden','culture'],range:['10:00','19:00'],open:d=>d.getDay()!==1},
+tokyo:{name:'Café du Palais de Tokyo',q:'Café du Palais de Tokyo, Paris',lat:48.8647,lon:2.2971,type:['meal','social','culture'],range:['12:00','22:00'],open:d=>true},
+montsouris:{name:'Parc Montsouris',q:'Parc Montsouris, Paris',lat:48.8226,lon:2.3388,type:['garden','nature'],range:['07:00','20:30'],open:d=>true},
+brassens:{name:'Parc Georges-Brassens',q:'Parc Georges-Brassens, Paris',lat:48.8330,lon:2.3008,type:['garden','nature'],range:['08:00','20:30'],open:d=>true},
+wanted:{name:'Wanted Café Paris',q:'Wanted Café Paris, 70 Rue du Faubourg Saint-Martin, Paris',lat:48.8717,lon:2.3572,type:['meal','social'],range:['08:00','01:00'],open:d=>true},
+pavillon:{name:'Le Pavillon des Canaux',q:'Le Pavillon des Canaux, 39 Quai de la Loire, Paris',lat:48.8870,lon:2.3744,type:['meal','social','water'],range:['11:00','00:00'],open:d=>d.getDay()!==1},
+buttes:{name:'Parc des Buttes-Chaumont',q:'Parc des Buttes-Chaumont, Paris',lat:48.8809,lon:2.3828,type:['garden','nature'],range:['07:00','21:00'],open:d=>true},
+chapeau:{name:'Parc de la Butte du Chapeau Rouge',q:'Parc de la Butte du Chapeau Rouge, Paris',lat:48.8777,lon:2.4052,type:['garden','nature'],range:['07:00','20:30'],open:d=>true},
+floral:{name:'Parc Floral de Paris',q:'Parc Floral de Paris',lat:48.8375,lon:2.4399,type:['garden','nature'],range:['09:30','20:00'],open:d=>true},
+auteuil:{name:'Jardin des Serres d’Auteuil',q:'Jardin des Serres d’Auteuil, Paris',lat:48.8470,lon:2.2528,type:['garden','culture'],range:['08:00','20:00'],open:d=>d.getDay()!==1},
+boulogne:{name:'Bois de Boulogne',q:'Bois de Boulogne, Paris',lat:48.8620,lon:2.2520,type:['nature','walk'],range:['00:00','23:59'],open:d=>true},
+canal:{name:'Canal Saint-Martin',q:'Canal Saint-Martin, Paris',lat:48.8710,lon:2.3650,type:['walk','water','urban'],range:['00:00','23:59'],open:d=>true},
+belleville:{name:'Parc de Belleville',q:'Parc de Belleville, Paris',lat:48.8720,lon:2.3870,type:['garden','nature','urban'],range:['07:00','20:30'],open:d=>true},
+villette:{name:'Bassin de la Villette',q:'Bassin de la Villette, Paris',lat:48.8890,lon:2.3740,type:['walk','water','urban'],range:['00:00','23:59'],open:d=>true},
+vincennes:{name:'Bois de Vincennes',q:'Bois de Vincennes, Paris',lat:48.8330,lon:2.4330,type:['nature','walk'],range:['00:00','23:59'],open:d=>true},
+trocadero:{name:'Place du Trocadéro',q:'Place du Trocadéro, Paris',lat:48.8619,lon:2.2870,type:['walk','urban'],range:['00:00','23:59'],open:d=>true}
 };
-const T=[
-{id:'marais',name:'Marais → Seine → Trocadéro',zone:'centre-ouest',steps:[['10:00','Café · Le Café des Musées','cafe','Petit-déjeuner / café'],['11:15','Place des Vosges','vosges','Balade dans le Marais'],['12:45','Déjeuner · Berges de Seine','seine','Pause déjeuner puis descente vers les quais'],['14:30','Berges de Seine','seine','Grande marche panoramique'],['16:00','Jardin du Quai Branly','branly','Pause verte'],['17:45','Café du Palais de Tokyo','tokyo','Pause et temps libre'],['19:30','Dîner · Palais de Tokyo','tokyo','Dîner dans le secteur'],['21:00','Place du Trocadéro','trocadero','Balade finale']]},
-{id:'sud',name:'Montsouris → Brassens → Seine',zone:'sud-ouest',steps:[['10:00','Parc Montsouris','montsouris','Grande boucle matinale'],['11:45','Parc Montsouris','montsouris','Temps libre au parc'],['13:00','Déjeuner · Georges-Brassens','brassens','Déjeuner'],['14:15','Parc Georges-Brassens','brassens','Promenade et découverte'],['16:00','Berges de Seine','seine','Trajet vers les quais'],['17:30','Berges de Seine','seine','Pause en bord d’eau'],['19:00','Wanted Café Paris','wanted','Dîner ou verre'],['21:00','Canal Saint-Martin','canal','Balade finale']]},
-{id:'canal',name:'Canal Saint-Martin → Villette',zone:'nord-est',steps:[['10:00','Wanted Café Paris','wanted','Petit-déjeuner'],['11:15','Canal Saint-Martin','canal','Marche le long du canal'],['12:30','Déjeuner · Pavillon des Canaux','pavillon','Déjeuner au bord de l’eau'],['14:00','Bassin de la Villette','villette','Grande promenade'],['15:45','Bassin de la Villette','villette','Temps libre'],['17:30','Pavillon des Canaux','pavillon','Pause café'],['19:00','Bassin de la Villette','villette','Dîner dans le quartier'],['21:00','Villette','villette','Fin de soirée']]},
-{id:'buttes',name:'Buttes-Chaumont → Belleville → Canal',zone:'nord-est',steps:[['09:30','Parc des Buttes-Chaumont','buttes','Grande boucle et belvédère'],['11:30','Parc des Buttes-Chaumont','buttes','Temps libre'],['13:00','Déjeuner · Belleville','wanted','Déjeuner dans le quartier'],['14:30','Belleville','belleville','Promenade urbaine'],['16:00','Canal Saint-Martin','canal','Descente vers le canal'],['17:30','Canal Saint-Martin','canal','Pause et balade'],['19:00','Wanted Café Paris','wanted','Dîner ou verre'],['21:00','Canal Saint-Martin','canal','Fin de parcours']]},
-{id:'chapeau',name:'Chapeau Rouge → Villette → Canal',zone:'nord-est',steps:[['10:00','Parc de la Butte du Chapeau Rouge','chapeau','Promenade matinale'],['11:30','Parc de la Butte du Chapeau Rouge','chapeau','Temps libre'],['13:00','Déjeuner · Villette','pavillon','Déjeuner près du bassin'],['14:30','Bassin de la Villette','villette','Promenade autour du bassin'],['16:00','Le Pavillon des Canaux','pavillon','Pause café'],['17:30','Canal de l’Ourcq','villette','Marche au fil de l’eau'],['19:30','Villette','villette','Dîner'],['21:00','Bassin de la Villette','villette','Fin de soirée']]},
-{id:'floral',name:'Montsouris → Bois de Vincennes → Parc Floral',zone:'sud-est',steps:[['10:00','Parc Montsouris','montsouris','Matinée nature'],['11:45','Parc Montsouris','montsouris','Temps libre'],['13:00','Déjeuner · secteur Vincennes','floral','Déjeuner'],['14:30','Parc Floral de Paris','floral','Promenade et jardins'],['16:30','Parc Floral de Paris','floral','Temps libre'],['18:00','Bois de Vincennes','vincennes','Marche de fin d’après-midi'],['19:30','Paris sud-est','vincennes','Dîner dans le secteur'],['21:00','Retour / fin de journée','vincennes','Fin de parcours']]},
-{id:'ouest',name:'Auteuil → Seine → Trocadéro',zone:'ouest',steps:[['10:00','Jardin des Serres d’Auteuil','auteuil','Promenade dans le jardin'],['11:45','Bois de Boulogne','boulogne','Balade nature'],['13:00','Déjeuner · Seine','seine','Pause déjeuner'],['14:30','Berges de Seine','seine','Marche vers l’ouest'],['16:00','Berges de Seine','seine','Temps libre'],['17:45','Café du Palais de Tokyo','tokyo','Pause café'],['19:30','Dîner · Palais de Tokyo','tokyo','Dîner'],['21:00','Place du Trocadéro','trocadero','Fin de journée']]}
+
+const SLOT=[
+{id:'matin',label:'Matin',time:'10:00',types:['garden','nature','walk','urban','culture','meal'],desc:'Mise en route et première balade'},
+{id:'midi',label:'Déjeuner',time:'12:45',types:['meal'],desc:'Pause repas dans un lieu réellement référencé'},
+{id:'aprem',label:'Après-midi',time:'14:30',types:['garden','nature','walk','water','culture','urban'],desc:'Activité principale et découverte'},
+{id:'apero',label:'Apéro',time:'17:30',types:['meal','social'],desc:'Pause sociale / café'},
+{id:'diner',label:'Dîner',time:'19:30',types:['meal'],desc:'Deuxième pause repas ou café-restauration'},
+{id:'soir',label:'Soirée',time:'21:00',types:['walk','water','urban','nature'],desc:'Dernière balade sans contrainte de fermeture'}
 ];
-let fav=JSON.parse(localStorage.getItem('psp4fav')||'[]'), reroll=0;
+const PROFILES=[
+{id:'mix',label:'Mix équilibré',prefer:['nature','water','urban','culture'],avoid:[]},
+{id:'nature',label:'Nature & grands parcs',prefer:['nature','garden'],avoid:['urban']},
+{id:'eau',label:'Eau & quais',prefer:['water','walk'],avoid:[]},
+{id:'urbain',label:'Urbain & social',prefer:['urban','social','culture'],avoid:['garden']}
+];
+
+let fav=JSON.parse(localStorage.getItem('psp4fav')||'[]'),reroll=0;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt=v=>new Date(v+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
 const iso=d=>d.toISOString().slice(0,10);
+const fmt=v=>new Date(v+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
 const addDays=(v,n)=>{const d=new Date(v+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
+const tm=v=>{const[h,m]=v.split(':').map(Number);return h*60+m};
 const maps=p=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q);
 const dir=(a,b)=>'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(a.q)+'&destination='+encodeURIComponent(b.q)+'&travelmode=walking';
-const tm=v=>{let[h,m]=v.split(':').map(Number);return h*60+m};
-function openAt(p,key,date,time){if(!p.open(date))return false;let t=tm(time),a=tm(p.range[0]),b=tm(p.range[1]);if(b<a)b+=1440;if(t<a&&t<120)b+=1440;return t>=a&&t<=b}
-function valid(t,date){return t.steps.every((s,i)=>{const p=P[s[2]];return openAt(p,s[2],date,new Date(date+'T'+s[0]).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}))})}
-function dist(a,b){const R=6371,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180,dp=(b.lat-a.lat)*Math.PI/180,dq=(b.lon-a.lon)*Math.PI/180,x=Math.sin(dp/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dq/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
-function score(t,date,used){let s=0;if(!valid(t,new Date(date+'T12:00')))return -9999;const zones=used.filter(Boolean);if(zones.includes(t.zone))s-=35;for(let i=0;i<t.steps.length-1;i++)s-=dist(P[t.steps[i][2]],P[t.steps[i+1][2]])*2;return s}
-function plansForDate(date,count=1,seed=0){let pool=T.map(t=>({t,s:score(t,date,[])})).filter(x=>x.s>-999).sort((a,b)=>b.s-a.s);if(!pool.length)return [];let out=[];for(let k=0;k<count;k++){let idx=(seed+k*2)%pool.length;out.push(pool[idx].t)}return out}
-function rangeDates(start,end){let a=[],d=new Date(start+'T12:00'),z=new Date(end+'T12:00');while(d<=z&&a.length<31){a.push(iso(d));d.setDate(d.getDate()+1)}return a}
-function weekendDates(start){const d=new Date(start+'T12:00');const day=d.getDay();let add=day===0?6:6-day;const sat=new Date(d);sat.setDate(d.getDate()+add);const sun=new Date(sat);sun.setDate(sat.getDate()+1);return [iso(sat),iso(sun)]}
-function card(t,i,date){let total=0,rows='';t.steps.forEach((x,j)=>{const p=P[x[2]],n=t.steps[j+1];if(n)total+=dist(p,P[n[2]]);rows+='<div class="time">'+x[0]+'</div><div class="activity"><b><a class="place" target="_blank" rel="noopener" href="'+maps(p)+'">'+esc(x[1])+'</a></b><small>'+esc(p.name)+' · '+esc(x[3])+'</small><span class="tag">Créneau compatible avec le programme</span>'+(n?'<div class="route-note">→ '+dist(p,P[n[2]]).toFixed(1)+' km géographiques · <a target="_blank" rel="noopener" href="'+dir(p,P[n[2]])+'">itinéraire piéton Google Maps</a></div>':'')+'</div>'});return '<article class="card"><button class="star '+(fav.includes(t.id)?'active':'')+'" data-fav="'+esc(t.id)+'" type="button">★</button><div class="meta">'+fmt(date).toUpperCase()+' · '+esc(t.zone)+'</div><h2>'+esc(t.name)+'</h2><p class="summary">Journée complète · 8 étapes · 09:30/10:00 → 21:00</p><div class="route"><strong>'+total.toFixed(1)+' km géographiques entre étapes</strong><br><span class="route-note">Les distances sont indicatives ; le lien Google Maps ouvre le vrai trajet piéton.</span></div><div class="actions"><button type="button" class="program-btn">Voir le programme</button></div><details><summary>Déroulé de la journée</summary><div class="timeline">'+rows+'</div></details></article>'}
-function bind(){document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{const n=b.dataset.fav;fav=fav.includes(n)?fav.filter(x=>x!==n):fav.concat(n);localStorage.setItem('psp4fav',JSON.stringify(fav));generate()});document.querySelectorAll('.program-btn').forEach(b=>b.onclick=()=>{const d=b.closest('.card').querySelector('details');d.open=!d.open;b.textContent=d.open?'Masquer le programme':'Voir le programme'})}
-function renderGroups(groups){let html='';groups.forEach(g=>{html+='<section style="grid-column:1/-1"><div class="meta" style="margin:8px 0 6px">'+fmt(g.date).toUpperCase()+'</div><div class="scenarios">'+g.plans.map((t,i)=>card(t,i+1,g.date)).join('')+'</div></section>'});document.getElementById('scenarios').innerHTML=html||'<div class="empty">Aucun programme compatible avec les dates choisies.</div>';document.getElementById('favcount').textContent='· '+fav.length+' favori'+(fav.length>1?'s':'');const all=groups.flatMap(g=>g.plans).filter(t=>fav.includes(t.id));document.getElementById('favorites').innerHTML=all.length?all.map((t,i)=>card(t,i+1,groups[0].date)).join(''):'<div class="empty">Aucun favori affiché.</div>';bind()}
-function generate(){const period=document.getElementById('period').value,st=document.getElementById('start').value||iso(new Date()),en=document.getElementById('end').value;let dates=[],groups=[];if(period==='day')dates=[st];else if(period==='weekend')dates=weekendDates(st);else if(period==='week')dates=rangeDates(st,addDays(st,6));else dates=rangeDates(st,en||st);dates.forEach((date,di)=>groups.push({date,plans:plansForDate(date,period==='day'?3:1,reroll+di)}));document.getElementById('title').textContent=period==='day'?'3 alternatives · '+fmt(st):period==='weekend'?'Week-end · samedi + dimanche':period==='week'?'7 jours · un programme par jour':en?'Période · '+fmt(st)+' → '+fmt(en):'Période personnalisée';document.getElementById('subtitle').textContent=period==='day'?'Trois journées complètes différentes pour la date choisie.':period==='weekend'?'Deux journées distinctes, chacune avec son propre parcours.':period==='week'?'Chaque date reçoit son propre programme, sans recopier une seule journée.':'Chaque date de la période reçoit son propre programme.';renderGroups(groups)}
+function hours(p,date){
+  const dow=date.getDay();
+  if(p===P.brassens)return dow===0||dow===6?['09:00','20:30']:['08:00','20:30'];
+  if(p===P.chapeau)return dow===0||dow===6?['08:00','20:30']:['07:00','20:30'];
+  if(p===P.montsouris)return ['07:00','20:30'];
+  if(p===P.buttes)return ['07:00','21:00'];
+  if(p===P.belleville)return ['07:00','20:30'];
+  return p.range;
+}
+function openAt(p,date,time){
+  if(!p.open(date))return false;
+  let t=tm(time),[aa,bb]=hours(p,date),a=tm(aa),b=tm(bb);
+  if(b<a)b+=1440;
+  if(t<a&&t<120)t+=1440;
+  return t>=a&&t<=b;
+}
+function dist(a,b){
+  const R=6371,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180,dp=(b.lat-a.lat)*Math.PI/180,dq=(b.lon-a.lon)*Math.PI/180;
+  const x=Math.sin(dp/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dq/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function rand(seed){const x=Math.sin(seed*12.9898)*43758.5453;return x-Math.floor(x)}
+function candidates(slot,date,used){
+  return Object.entries(P).filter(([key,p])=>!used.includes(key)&&p.type.some(t=>slot.types.includes(t))&&openAt(p,date,slot.time));
+}
+function build(date,profileIndex,variant){
+  const dateObj=new Date(date+'T12:00'),profile=PROFILES[profileIndex%PROFILES.length],used=[],steps=[];
+  let previous=null;
+  for(let si=0;si<SLOT.length;si++){
+    const slot=SLOT[si],cand=candidates(slot,dateObj,used);
+    if(!cand.length)return null;
+    const ranked=cand.map(([key,p])=>{
+      let s=0;
+      if(previous)s-=dist(P[previous],p)*18;
+      s+=profile.prefer.reduce((n,t)=>n+(p.type.includes(t)?18:0),0);
+      s+=profile.avoid.reduce((n,t)=>n+(p.type.includes(t)?-12:0),0);
+      s+=(rand(hash(date+'|'+profile.id+'|'+variant+'|'+si+'|'+key))*12);
+      if(si===0&&p.type.includes('meal'))s+=5;
+      if(si===5&&p.type.includes('walk'))s+=10;
+      return {key,p,s};
+    }).sort((a,b)=>b.s-a.s);
+    const pick=ranked[Math.min(ranked.length-1,variant%Math.min(3,ranked.length))];
+    used.push(pick.key);steps.push({time:slot.time,key:pick.key,label:slot.label,desc:slot.desc});previous=pick.key;
+  }
+  let total=0;for(let i=1;i<steps.length;i++)total+=dist(P[steps[i-1].key],P[steps[i].key]);
+  return {id:date+'-'+profile.id+'-'+variant,name:profile.label+' · '+routeName(steps),profile:profile.label,steps,total};
+}
+function routeName(steps){
+  const names=steps.map(s=>P[s.key].name);
+  return names.slice(0,3).join(' → ');
+}
+function plansForDate(date,count){
+  const out=[],seen=new Set();
+  for(let i=0;i<24&&out.length<count;i++){
+    const profileIndex=(reroll+i)%PROFILES.length,variant=Math.floor((reroll+i)/PROFILES.length);
+    const p=build(date,profileIndex,variant);
+    if(!p)continue;
+    const sig=p.steps.map(s=>s.key).join('|');
+    if(!seen.has(sig)){seen.add(sig);out.push(p)}
+  }
+  return out;
+}
+function rangeDates(start,end){
+  const a=[],d=new Date(start+'T12:00'),z=new Date(end+'T12:00');
+  while(d<=z&&a.length<31){a.push(iso(d));d.setDate(d.getDate()+1)}return a;
+}
+function weekendDates(start){
+  const d=new Date(start+'T12:00'),day=d.getDay(),add=day===0?6:6-day,sat=new Date(d);
+  sat.setDate(d.getDate()+add);const sun=new Date(sat);sun.setDate(sat.getDate()+1);return[iso(sat),iso(sun)];
+}
+function card(plan,date){
+  let rows='',used=[];
+  plan.steps.forEach((s,i)=>{
+    const p=P[s.key],next=plan.steps[i+1],hh=hours(p,new Date(date+'T12:00'));
+    used.push(s.key);
+    rows+='<div class="time">'+s.time+'</div><div class="activity"><b><a class="place" target="_blank" rel="noopener" href="'+maps(p)+'">'+esc(s.label)+' · '+esc(p.name)+'</a></b><small>'+esc(s.desc)+' · horaires utiles: '+hh[0]+'–'+hh[1]+'</small><span class="tag">Lieu ouvert au créneau calculé</span>'+(next?'<div class="route-note">→ '+dist(p,P[next.key]).toFixed(1)+' km géographiques · <a target="_blank" rel="noopener" href="'+dir(p,P[next.key])+'">itinéraire piéton Google Maps</a></div>':'')+'</div>';
+  });
+  const unique=new Set(used).size;
+  return '<article class="card"><button class="star '+(fav.includes(plan.id)?'active':'')+'" data-fav="'+esc(plan.id)+'" type="button">★</button><div class="meta">'+esc(plan.profile)+' · '+fmt(date).toUpperCase()+'</div><h2>'+esc(plan.name)+'</h2><p class="summary">'+unique+' lieux distincts · '+plan.steps.length+' créneaux · distance indicative '+plan.total.toFixed(1)+' km</p><div class="route"><strong>Parcours composé automatiquement</strong><br><span class="route-note">Le moteur privilégie les lieux ouverts, évite les doublons et limite les grands sauts géographiques. Les distances sont géographiques ; Google Maps donne le vrai trajet piéton.</span></div><div class="actions"><button type="button" class="program-btn">Voir le programme</button></div><details><summary>Déroulé de la journée</summary><div class="timeline">'+rows+'</div></details></article>';
+}
+function bind(){
+  document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{const n=b.dataset.fav;fav=fav.includes(n)?fav.filter(x=>x!==n):fav.concat(n);localStorage.setItem('psp4fav',JSON.stringify(fav));generate()});
+  document.querySelectorAll('.program-btn').forEach(b=>b.onclick=()=>{const d=b.closest('.card').querySelector('details');d.open=!d.open;b.textContent=d.open?'Masquer le programme':'Voir le programme'});
+}
+function renderGroups(groups){
+  let html='';
+  groups.forEach(g=>{html+='<section style="grid-column:1/-1"><div class="meta" style="margin:8px 0 6px">'+fmt(g.date).toUpperCase()+'</div><div class="scenarios">'+g.plans.map(p=>card(p,g.date)).join('')+'</div></section>'});
+  document.getElementById('scenarios').innerHTML=html||'<div class="empty">Aucun programme compatible avec les dates choisies.</div>';
+  document.getElementById('favcount').textContent='· '+fav.length+' favori'+(fav.length>1?'s':'');
+  const saved=groups.flatMap(g=>g.plans).filter(p=>fav.includes(p.id));
+  document.getElementById('favorites').innerHTML=saved.length?saved.map(p=>card(p,groups.find(g=>g.plans.includes(p))?.date||groups[0]?.date)).join(''):'<div class="empty">Aucun favori affiché dans cette sélection.</div>';
+  bind();
+}
+function generate(){
+  const period=document.getElementById('period').value,st=document.getElementById('start').value||iso(new Date()),en=document.getElementById('end').value;
+  let dates=[];
+  if(period==='day')dates=[st];else if(period==='weekend')dates=weekendDates(st);else if(period==='week')dates=rangeDates(st,addDays(st,6));else dates=rangeDates(st,en||st);
+  const groups=dates.map((date,di)=>({date,plans:plansForDate(date,period==='day'?3:1)}));
+  document.getElementById('title').textContent=period==='day'?'3 alternatives · '+fmt(st):period==='weekend'?'Week-end · samedi + dimanche':period==='week'?'7 jours · un programme par jour':en?'Période · '+fmt(st)+' → '+fmt(en):'Période personnalisée';
+  document.getElementById('subtitle').textContent='Le moteur compose chaque journée à partir de créneaux, horaires et proximité géographique — au lieu de faire tourner des itinéraires fixes.';
+  renderGroups(groups);
+}
 document.getElementById('refresh').onclick=generate;
 document.getElementById('reroll').onclick=()=>{reroll++;generate()};
 document.getElementById('period').onchange=()=>{const p=document.getElementById('period').value;document.getElementById('end').style.display=p==='custom'?'block':'none';generate()};
