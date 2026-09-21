@@ -147,9 +147,21 @@ function generate(){
   document.getElementById('subtitle').textContent='Le moteur compose chaque journée à partir de créneaux, horaires et proximité géographique — au lieu de faire tourner des itinéraires fixes.';
   renderGroups(groups);
 }
-document.getElementById('refresh').onclick=generate;
-document.getElementById('reroll').onclick=()=>{reroll++;generate()};
-document.getElementById('period').onchange=()=>{const p=document.getElementById('period').value;document.getElementById('end').style.display=p==='custom'?'block':'none';generate()};
-document.getElementById('start').onchange=generate;document.getElementById('end').onchange=generate;
-document.getElementById('start').value=iso(new Date());document.getElementById('end').value=addDays(iso(new Date()),6);document.getElementById('end').style.display='none';generate();
+function init(){
+  const refresh=document.getElementById('refresh');
+  const rerollBtn=document.getElementById('reroll');
+  const period=document.getElementById('period');
+  const start=document.getElementById('start');
+  const end=document.getElementById('end');
+  refresh.addEventListener('click',generate);
+  rerollBtn.addEventListener('click',()=>{reroll++;generate()});
+  period.addEventListener('change',()=>{end.style.display=period.value==='custom'?'block':'none';generate()});
+  start.addEventListener('change',generate);
+  end.addEventListener('change',generate);
+  start.value=iso(new Date());
+  end.value=addDays(start.value,6);
+  end.style.display='none';
+  generate();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 </script></body></html>
