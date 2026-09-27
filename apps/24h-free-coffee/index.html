@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>24H FREE COFFEE</title>
+<style>
+:root{--bg:#07100d;--panel:#0e1915;--panel2:#12201a;--line:#294238;--text:#edf5f0;--muted:#9eb1a7;--accent:#bde8ce;--gold:#dfc98f;--red:#e8aaa0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#193026,#07100d 44%,#040706);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}a{color:var(--accent)}header,main{max-width:1200px;margin:auto;padding:24px}header{padding-bottom:10px}h1{font-size:clamp(34px,6vw,66px);letter-spacing:-.05em;margin:0}.sub{color:var(--muted);max-width:760px;font-size:16px;line-height:1.5}.top{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.top button,.save{border:1px solid var(--line);background:#12201a;color:var(--text);border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}.top button.active{background:var(--accent);color:#07100d}.grid{display:grid;grid-template-columns:1.45fr .85fr;gap:14px}.panel{background:rgba(14,25,21,.96);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 15px 45px #0005}.panel h2{margin:0 0 6px}.muted{color:var(--muted)}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:15px;padding:14px}.num{font-size:29px;font-weight:900;letter-spacing:-.03em}.label{font-size:12px;color:var(--muted);margin-top:3px}.trend{margin-top:14px;display:grid;gap:9px}.barrow{display:grid;grid-template-columns:120px 1fr 45px;align-items:center;gap:8px;font-size:12px}.bar{height:9px;background:#1b2b24;border-radius:99px;overflow:hidden}.fill{height:100%;background:var(--accent);border-radius:99px}.timeline{display:grid;grid-template-columns:90px 1fr;gap:8px;margin-top:15px}.year{font-weight:900;color:var(--gold)}.event{border-left:2px solid var(--line);padding:0 0 12px 13px}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}.fact{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:15px;position:relative}.fact h3{margin:0 30px 7px 0;font-size:16px}.fact p{margin:6px 0;line-height:1.48;color:#c8d5ce}.save{position:absolute;right:10px;top:10px;padding:6px 9px}.save.saved{color:var(--gold)}.wide{margin-top:14px}.signal{border-left:3px solid var(--gold);padding:11px 13px;background:#dfc98f0b;border-radius:10px;margin-top:12px}.sources{font-size:12px;line-height:1.55}.savedList{display:grid;gap:8px;margin-top:10px}.savedItem{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#0b1511}.tag{display:inline-block;font-size:10px;font-weight:900;color:#9fc4af;border:1px solid #355448;border-radius:99px;padding:4px 7px;margin-bottom:8px}.small{font-size:12px}.meter{height:8px;background:#1a2922;border-radius:99px;overflow:hidden;margin:9px 0}.meter span{display:block;height:100%;background:var(--gold)}footer{color:#70867b;font-size:11px;padding:20px 0 40px}.hidden{display:none}@media(max-width:850px){.grid{grid-template-columns:1fr}.kpis,.cards{grid-template-columns:1fr 1fr}}@media(max-width:600px){header,main{padding:16px}.kpis,.cards{grid-template-columns:1fr}.barrow{grid-template-columns:95px 1fr 40px}}
+</style>
+</head>
+<body>
+<header>
+<div class="tag">CENTRE APPLICATIF · REPÈRE QUOTIDIEN</div>
+<h1>24H FREE COFFEE</h1>
+<p class="sub">Un tableau de bord sur trois forces qui se croisent : <b>la rencontre physique</b>, <b>la disponibilité relationnelle</b> et <b>la concurrence dans un monde où les outils rendent la production plus accessible</b>. Des faits, des séries longues, des ordres de grandeur — et un carnet pour garder ce qui mérite d'être relu.</p>
+<div class="top">
+<button class="active" data-tab="today">Aujourd'hui</button><button data-tab="meet">50 ans de rencontres</button><button data-tab="relation">Couples & solitude</button><button data-tab="competition">Concurrence & outils</button><button data-tab="saved">Mon carnet <span id="savedCount"></span></button>
+</div>
+</header>
+<main>
+<section id="today" class="tab">
+<div class="grid">
+<div class="panel">
+<h2>☕ Le point des 24 heures</h2>
+<p class="muted">Lecture rapide du jour : ce qui change, ce qui ne change pas, et où se situe l'opportunité humaine.</p>
+<div class="kpis">
+<div class="kpi"><div class="num">24 %</div><div class="label">des premiers couples ayant commencé à cohabiter en 2020–2024 se sont rencontrés en ligne</div></div>
+<div class="kpi"><div class="num">9 %</div><div class="label">des rencontres de couples se font aujourd'hui dans un cadre festif, contre 29 % dans les années 1960–70</div></div>
+<div class="kpi"><div class="num">33 %</div><div class="label">des personnes se sont senties seules au moins parfois au cours des 4 semaines précédant l'enquête 2022</div></div>
+</div>
+<div class="signal"><b>Repère :</b> le numérique n'a pas supprimé la rencontre physique. Il a déplacé une partie des occasions de rencontre et réduit le poids de certains cadres festifs. Les cafés, rues, lieux d'études, travail et espaces publics restent donc des espaces sociaux — mais ils ne jouent plus exactement le même rôle.</div>
+</div>
+<div class="panel">
+<h2>🧭 Comment lire l'époque</h2>
+<div class="trend">
+<div class="barrow"><span>En ligne</span><div class="bar"><div class="fill" style="width:24%"></div></div><b>24%</b></div>
+<div class="barrow"><span>Fêtes, bars…</span><div class="bar"><div class="fill" style="width:9%"></div></div><b>9%</b></div>
+<div class="barrow"><span>Amis</span><div class="bar"><div class="fill" style="width:19%"></div></div><b>19%</b></div>
+<div class="barrow"><span>Études</span><div class="bar"><div class="fill" style="width:20%"></div></div><b>20%</b></div>
+</div>
+<p class="small muted">Ces chiffres ne mesurent pas la totalité des interactions sociales : ils décrivent des cadres de rencontre de futurs couples.</p>
+</div>
+</div>
+<div class="panel wide">
+<h2>⚡ La règle des 24H</h2>
+<div class="cards">
+<div class="fact" data-id="rule-physical"><button class="save" data-save="rule-physical">☆</button><h3>Une interaction réelle est devenue un actif rare</h3><p>À mesure que davantage de contacts passent par des interfaces, une conversation spontanée dans un café, une librairie, un parc ou un événement peut constituer une occasion que l'algorithme ne distribue pas de la même manière.</p></div>
+<div class="fact" data-id="rule-social"><button class="save" data-save="rule-social">☆</button><h3>Le réseau reste un multiplicateur</h3><p>En 2022, 55 % des personnes ne vivant pas en couple déclaraient rencontrer leurs amis au moins chaque semaine, contre 36 % des personnes en couple. Le contact social n'est donc pas réductible à la conjugalité.</p></div>
+<div class="fact" data-id="rule-tools"><button class="save" data-save="rule-tools">☆</button><h3>Les outils abaissent le coût d'entrée</h3><p>Texte, image, vidéo, code, traduction, analyse et IA rendent certaines productions beaucoup plus accessibles. Cela élargit le nombre de personnes capables de produire — et donc potentiellement le nombre de concurrents visibles.</p></div>
+<div class="fact" data-id="rule-gap"><button class="save" data-save="rule-gap">☆</button><h3>La fracture peut se déplacer</h3><p>Le différentiel ne porte plus seulement sur « savoir faire ». Il peut aussi porter sur la capacité à choisir un problème, créer une offre, distribuer, bâtir une réputation, apprendre vite et utiliser les outils de façon cohérente.</p></div>
+</div>
+</div>
+</section>
+
+<section id="meet" class="tab hidden">
+<div class="panel">
+<h2>☕ 1970 → 2026 · 50 ans de déplacement des rencontres</h2>
+<p class="muted">La série récente de l'Ined permet de relier les changements générationnels sans raconter une histoire simpliste de « disparition du café ».</p>
+<div class="timeline">
+<div class="year">1960–70</div><div class="event"><b>29 %</b> des rencontres de futurs couples se font dans des cadres festifs : bals, boîtes, soirées et fêtes.</div>
+<div class="year">1980–2000</div><div class="event">Les rencontres par les amis montent jusqu'à <b>26 %</b> dans les années 2000. Les études gagnent aussi du terrain avec l'allongement des études.</div>
+<div class="year">2000–2010</div><div class="event">Les sites de rencontre et les nouveaux intermédiaires numériques apparaissent et commencent à modifier la géographie de la rencontre.</div>
+<div class="year">2020–24</div><div class="event"><b>24 %</b> des premiers couples ayant commencé à cohabiter durant cette période se sont rencontrés en ligne. Les cadres festifs sont descendus à <b>9 %</b> et les rencontres par les amis à <b>19 %</b>.</div>
+<div class="year">Aujourd'hui</div><div class="event">Les études représentent environ <b>20 %</b> des rencontres en France, contre 10 % dans les années 1960. Les lieux publics restent présents, mais la composition des parcours de rencontre s'est transformée.</div>
+</div>
+</div>
+<div class="cards">
+<div class="fact"><button class="save" data-save="meeting-trajectory">☆</button><h3>Ce qui a reculé</h3><p><b>Cadres festifs :</b> 29 % → 9 % des rencontres de couples. Le recul commence avant le Covid et n'est donc pas expliqué uniquement par les confinements.</p></div>
+<div class="fact"><button class="save" data-save="meeting-friends">☆</button><h3>Ce qui s'est inversé</h3><p><b>Amis :</b> 16 % dans les années 1960 → 26 % dans les années 2000 → 19 % aujourd'hui.</p></div>
+<div class="fact"><button class="save" data-save="meeting-online">☆</button><h3>Ce qui a émergé</h3><p><b>En ligne :</b> 24 % des premiers couples cohabitants formés en 2020–2024. Ce canal englobe notamment sites, applications et certains autres espaces numériques.</p></div>
+<div class="fact"><button class="save" data-save="meeting-studies">☆</button><h3>Ce qui a progressé autrement</h3><p><b>Études :</b> 10 % → 20 % entre les années 1960 et aujourd'hui, probablement en lien avec l'allongement des études.</p></div>
+</div>
+<div class="signal"><b>À retenir :</b> « moins de rencontres physiques » serait trop fort. Les données documentent surtout une <b>transformation des lieux et des intermédiaires</b>. Une partie du lien s'est numérisée ; les interactions de proximité n'ont pas disparu.</div>
+</section>
+
+<section id="relation" class="tab hidden">
+<div class="grid">
+<div class="panel">
+<h2>👥 Célibat : ne pas confondre les indicateurs</h2>
+<p class="muted">Le chiffre « 48 % des femmes sont célibataires » n'est pas une mesure nationale unique que l'on peut valider telle quelle. L'Ined rappelle qu'il existe plusieurs définitions : jamais marié, pas marié, ne résidant pas en couple, vivant seul, ou ne se considérant pas en couple.</p>
+<div class="kpis">
+<div class="kpi"><div class="num">39 %</div><div class="label">des ménages sont composés d'une seule personne en 2022, contre 27 % en 1990</div></div>
+<div class="kpi"><div class="num">6,65 M</div><div class="label">de femmes vivent seules dans leur ménage en France en 2022</div></div>
+<div class="kpi"><div class="num">21,5 %</div><div class="label">des ménages sont des ménages d'une femme seule en 2022</div></div>
+</div>
+</div>
+<div class="panel">
+<h2>📞 Le lien n'a pas disparu</h2>
+<p>En 2022, <b>64 % des femmes</b> et <b>63 % des hommes</b> ont des contacts hebdomadaires avec leurs amis (rencontre ou communication).</p>
+<p>Chez les personnes ne vivant pas en couple, <b>72 %</b> ont des contacts hebdomadaires avec leurs amis, contre 58 % chez les personnes en couple.</p>
+<p class="muted small">Cela montre pourquoi « numérique = isolement » serait une conclusion trop simple : les communications font partie des contacts sociaux mesurés.</p>
+</div>
+</div>
+<div class="panel wide">
+<h2>📍 Un indicateur particulièrement parlant</h2>
+<p>En 2022, la part des personnes vivant dans un ménage d'une seule personne atteint <b>39 % des ménages</b>, contre 27 % en 1990. Dans le même temps, la part des ménages constitués uniquement d'un couple, avec ou sans enfant, est passée de 60 % à 48 %.</p>
+<div class="cards">
+<div class="fact"><button class="save" data-save="single-households">☆</button><h3>Plus de ménages seuls</h3><p>La hausse est réelle, mais elle ne signifie pas que 39 % des personnes sont célibataires : le dénominateur est le ménage.</p></div>
+<div class="fact"><button class="save" data-save="women-alone">☆</button><h3>Femmes seules</h3><p>6 648 221 femmes appartiennent à un ménage d'une personne en 2022. Là encore, vivre seule n'est pas synonyme de ne pas avoir de relation.</p></div>
+<div class="fact"><button class="save" data-save="couple-definition">☆</button><h3>Le mot « célibataire »</h3><p>L'état matrimonial ne suffit plus à décrire la vie affective : certaines personnes sont en couple sans cohabiter, d'où l'importance de préciser la définition.</p></div>
+<div class="fact"><button class="save" data-save="solitude">☆</button><h3>Solitude ressentie</h3><p>33 % des personnes ont déclaré s'être senties seules au moins parfois dans les quatre semaines précédant l'enquête 2022 ; 30 % chez les 16–24 ans.</p></div>
+</div>
+</div>
+</section>
+
+<section id="competition" class="tab hidden">
+<div class="panel">
+<h2>⚙️ Plus facile de bâtir · plus difficile d'être visible</h2>
+<p class="muted">Ici, il faut distinguer un fait mesuré d'une déduction. Les données ne permettent pas de compter directement « le nombre de concurrents » d'un créateur ou d'un indépendant. Elles permettent en revanche de documenter la diffusion des outils et la concentration des capacités.</p>
+<div class="kpis">
+<div class="kpi"><div class="num">18 %</div><div class="label">des entreprises françaises de 10 salariés ou plus utilisaient au moins une technologie d'IA en 2025, contre 6 % en 2023</div></div>
+<div class="kpi"><div class="num">58 %</div><div class="label">des entreprises de 250 salariés ou plus utilisent l'IA en 2025</div></div>
+<div class="kpi"><div class="num">59 %</div><div class="label">des entreprises du secteur information-communication utilisent l'IA en 2025</div></div>
+</div>
+<div class="signal"><b>Lecture :</b> le coût de certaines capacités baisse (rédaction, images, analyse, automatisation, prototypage). Mais la capacité à utiliser ces outils reste inégalement répartie. En 2025, l'écart d'usage de l'IA entre entreprises de moins de 50 salariés et celles de 250 salariés ou plus atteint <b>43 points</b>.</div>
+</div>
+<div class="cards">
+<div class="fact"><button class="save" data-save="ai-diffusion">☆</button><h3>L'effet « tout le monde peut construire »</h3><p>L'IA et les outils numériques abaissent certains coûts d'entrée. C'est une <b>inférence cohérente</b> avec leur diffusion, pas une mesure directe du nombre de concurrents.</p></div>
+<div class="fact"><button class="save" data-save="ai-gap">☆</button><h3>L'effet « l'écart peut se déplacer »</h3><p>En France, l'adoption 2025 est de 15 % chez les 10–49 salariés, 31 % chez les 50–249 et 58 % chez les 250+. Les moyens organisationnels restent donc très différents.</p></div>
+<div class="fact"><button class="save" data-save="productivity">☆</button><h3>Productivité et adoption vont ensemble</h3><p>L'OCDE observe que les entreprises les plus productives adoptent davantage l'IA ; en France, la part d'adoption dans le décile supérieur de productivité était 40 % plus élevée que dans le décile inférieur dans ses données 2018.</p></div>
+<div class="fact"><button class="save" data-save="wealth-gap">☆</button><h3>Le capital reste un filtre puissant</h3><p>En 2024, les 10 % de ménages les mieux dotés détenaient près de la moitié de la masse totale de patrimoine brut. Le numérique ne supprime donc pas automatiquement les écarts de capital.</p></div>
+</div>
+<div class="panel wide">
+<h2>🏛️ « Élysium » : un modèle de lecture, pas une prédiction</h2>
+<p>On peut relier les trois axes sans affirmer que la société se divisera mécaniquement en deux mondes.</p>
+<div class="timeline">
+<div class="year">1 · Accès</div><div class="event">Les outils numériques et l'IA rendent certaines tâches plus accessibles à davantage de personnes.</div>
+<div class="year">2 · Abondance</div><div class="event">Quand davantage de personnes peuvent produire, publier et lancer des projets, l'offre de contenus et de services peut devenir plus abondante.</div>
+<div class="year">3 · Sélection</div><div class="event">L'attention, la confiance, la distribution, la réputation, le capital et la capacité à exécuter deviennent des ressources critiques.</div>
+<div class="year">4 · Divergence</div><div class="event">Si l'accès aux outils, au capital, aux réseaux et aux compétences reste inégal, les gains peuvent être distribués de façon inégale. C'est le point à surveiller — pas une fatalité.</div>
+</div>
+</div>
+</section>
+
+<section id="saved" class="tab hidden">
+<div class="panel">
+<h2>📌 Mon carnet</h2>
+<p class="muted">Les éléments marqués ☆ sont sauvegardés <b>localement dans ce navigateur</b>. Rien n'est envoyé à un serveur. Tu peux revenir ici pour retrouver les chiffres ou idées qui t'intéressent.</p>
+<div id="savedList" class="savedList"></div>
+</div>
+</section>
+
+<footer>
+Sources principales : Insee, « Ménages, couples et familles » (RP 1990/1999/2022) ; Insee, « Relations sociales » (2022) ; Ined, « Les couples se rencontrent plus souvent en ligne et moins dans des fêtes » (2026) ; Insee, TIC entreprises 2025 ; OCDE, AI adoption by SMEs (2025). Les chiffres sont accompagnés de leur définition pour éviter les faux équivalents.
+</footer>
+</main>
+<script>
+const facts={
+'rule-physical':["Interaction réelle","Une conversation spontanée peut être une occasion que les interfaces numériques ne distribuent pas de la même manière."],
+'rule-social':["Réseau social","55 % des personnes ne vivant pas en couple rencontrent leurs amis chaque semaine, contre 36 % des personnes en couple."],
+'rule-tools':["Coût d'entrée","Les outils de texte, image, vidéo, code, analyse et IA abaissent certains coûts de production."],
+'rule-gap':["Écart de capacités","Le différentiel peut se déplacer vers le choix du problème, l'offre, la distribution, la réputation, l'apprentissage et l'exécution."],
+'meeting-trajectory':["Rencontres festives","29 % dans les années 1960–70 → 9 % aujourd'hui."],
+'meeting-friends':["Rencontres par les amis","16 % → 26 % dans les années 2000 → 19 % aujourd'hui."],
+'meeting-online':["Rencontres en ligne","24 % des premiers couples ayant commencé à cohabiter entre 2020 et 2024."],
+'meeting-studies':["Rencontres par les études","10 % dans les années 1960 → 20 % aujourd'hui."],
+'single-households':["Ménages d'une personne","27 % des ménages en 1990 → 39 % en 2022."],
+'women-alone':["Femmes seules","6 648 221 femmes appartiennent à un ménage d'une personne en France en 2022."],
+'couple-definition':["Définition du célibat","Célibat légal, absence de cohabitation, vie seul et sentiment d'être en couple sont des indicateurs différents."],
+'solitude':["Solitude ressentie","33 % des personnes se sont senties seules au moins parfois au cours des quatre semaines précédant l'enquête 2022."],
+'ai-diffusion':["Diffusion de l'IA","18 % des entreprises françaises de 10 salariés ou plus utilisent l'IA en 2025, contre 6 % en 2023."],
+'ai-gap':["Écart d'adoption","15 % chez les entreprises de 10–49 salariés contre 58 % chez celles de 250 salariés ou plus en 2025."],
+'productivity':["Productivité","L'OCDE observe une adoption plus forte de l'IA parmi les entreprises les plus productives ; en France, +40 % dans le décile supérieur vs inférieur dans les données 2018."],
+'wealth-gap':["Patrimoine","Les 10 % de ménages les mieux dotés détiennent près de la moitié du patrimoine brut en 2024."]
+};
+let saved=JSON.parse(localStorage.getItem('24h-free-coffee')||'[]');
+function paint(){document.querySelectorAll('[data-save]').forEach(b=>{const on=saved.includes(b.dataset.save);b.textContent=on?'★':'☆';b.classList.toggle('saved',on)});document.getElementById('savedCount').textContent=saved.length?' · '+saved.length:'';const box=document.getElementById('savedList');box.innerHTML=saved.length?saved.map(id=>'<div class="savedItem"><b>'+facts[id][0]+'</b><br><span class="muted small">'+facts[id][1]+'</span><br><button class="save" style="position:static;margin-top:7px" data-remove="'+id+'">Retirer</button></div>').join(''):'<div class="muted">Ton carnet est vide. Marque une fiche avec ☆ pour la conserver.</div>';document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{saved=saved.filter(x=>x!==b.dataset.remove);localStorage.setItem('24h-free-coffee',JSON.stringify(saved));paint()})}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.top button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));document.getElementById(b.dataset.tab).classList.remove('hidden');if(b.dataset.tab==='saved')paint();window.scrollTo({top:0,behavior:'smooth'})});
+document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{const id=b.dataset.save;saved=saved.includes(id)?saved.filter(x=>x!==id):saved.concat(id);localStorage.setItem('24h-free-coffee',JSON.stringify(saved));paint()});
+paint();
+</script>
+</body></html>
